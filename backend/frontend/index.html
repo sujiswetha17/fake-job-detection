@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fake Job Detection</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>Fake Job Detection System</h1>
+
+    <p>Check whether a job posting looks suspicious.</p>
+
+    <label>Job Title:</label>
+    <input type="text" id="job_title">
+
+    <br><br>
+
+    <label>Company:</label>
+    <input type="text" id="company">
+
+    <br><br>
+
+    <label>Location:</label>
+    <input type="text" id="location">
+
+    <br><br>
+
+    <label>Salary:</label>
+    <input type="number" id="salary">
+
+    <br><br>
+
+    <label>Description:</label>
+    <textarea id="description"></textarea>
+
+    <br><br>
+
+    <button onclick="analyzeJob()">Analyze Job</button>
+    <script src="script.js"></script>
+
+</body>
+</html>
