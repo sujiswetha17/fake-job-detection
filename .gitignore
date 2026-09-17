@@ -1,3 +1,16 @@
+
+# Python
 .venv/
 __pycache__/
 *.pyc
+
+# Dataset files
+dataset/dataset.csv
+dataset/cleaned_dataset.csv
+
+# ML model files
+*.pkl
+*.joblib
+
+# Secrets
+.env
