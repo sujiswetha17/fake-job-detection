@@ -1,4 +1,6 @@
 import pandas as pd
+import re
+import joblib
 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -9,21 +11,87 @@ from sklearn.metrics import (
     confusion_matrix
 )
 
-import joblib
+
+def clean_text(text):
+    if pd.isna(text):
+        return ""
+
+    text = str(text)
+
+    text = re.sub(
+        r"<[^>]+>",
+        " ",
+        text
+    )
+
+    text = re.sub(
+        r"http\S+|www\S+",
+        " ",
+        text
+    )
+
+    text = text.lower()
+
+    text = re.sub(
+        r"[^a-z0-9\s]",
+        " ",
+        text
+    )
+
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    ).strip()
+
+    return text
 
 
-# 1. Load cleaned dataset
-df = pd.read_csv("cleaned_dataset.csv")
+print("Loading dataset...")
 
-print("Dataset loaded:", df.shape)
+df = pd.read_csv(
+    "cleaned_dataset.csv"
+)
+
+print(
+    "Dataset loaded:",
+    df.shape
+)
 
 
-# 2. Select input and target
+text_columns = [
+    "title",
+    "company_profile",
+    "description",
+    "requirements",
+    "benefits"
+]
+
+
+for column in text_columns:
+    if column not in df.columns:
+        df[column] = ""
+
+
+df["combined_text"] = ""
+
+for column in text_columns:
+    df["combined_text"] += (
+        " " +
+        df[column].fillna("").apply(clean_text)
+    )
+
+
+df["combined_text"] = (
+    df["combined_text"]
+    .str.strip()
+)
+
+
 X = df["combined_text"]
 y = df["fraudulent"]
 
 
-# 3. Split dataset into training and testing data
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
@@ -32,58 +100,109 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=y
 )
 
-print("\nTraining samples:", len(X_train))
-print("Testing samples:", len(X_test))
+
+print(
+    "\nTraining samples:",
+    len(X_train)
+)
+
+print(
+    "Testing samples:",
+    len(X_test)
+)
 
 
-# 4. Convert text into TF-IDF features
 vectorizer = TfidfVectorizer(
     max_features=50000,
     ngram_range=(1, 2),
     min_df=2
 )
 
-X_train_tfidf = vectorizer.fit_transform(X_train)
-X_test_tfidf = vectorizer.transform(X_test)
 
-print("\nTF-IDF training shape:", X_train_tfidf.shape)
-print("TF-IDF testing shape:", X_test_tfidf.shape)
+X_train_tfidf = vectorizer.fit_transform(
+    X_train
+)
+
+X_test_tfidf = vectorizer.transform(
+    X_test
+)
 
 
-# 5. Create Logistic Regression model
+print(
+    "\nTF-IDF training shape:",
+    X_train_tfidf.shape
+)
+
+
 model = LogisticRegression(
     max_iter=1000,
     class_weight="balanced"
 )
 
 
-# 6. Train model
-print("\nTraining model...")
+print(
+    "\nTraining model..."
+)
 
-model.fit(X_train_tfidf, y_train)
+model.fit(
+    X_train_tfidf,
+    y_train
+)
 
-print("Training completed!")
-
-
-# 7. Make predictions
-y_pred = model.predict(X_test_tfidf)
-
-
-# 8. Evaluate model
-accuracy = accuracy_score(y_test, y_pred)
-
-print("\nAccuracy:", accuracy)
-
-print("\nClassification Report:")
-print(classification_report(y_test, y_pred))
-
-print("\nConfusion Matrix:")
-print(confusion_matrix(y_test, y_pred))
+print(
+    "Training completed!"
+)
 
 
-# 9. Save model and vectorizer
-joblib.dump(model, "fake_job_model.pkl")
-joblib.dump(vectorizer, "tfidf_vectorizer.pkl")
+y_pred = model.predict(
+    X_test_tfidf
+)
 
-print("\nModel saved as fake_job_model.pkl")
-print("Vectorizer saved as tfidf_vectorizer.pkl")
+
+accuracy = accuracy_score(
+    y_test,
+    y_pred
+)
+
+print(
+    "\nAccuracy:",
+    accuracy
+)
+
+print(
+    "\nClassification Report:"
+)
+
+print(
+    classification_report(
+        y_test,
+        y_pred
+    )
+)
+
+print(
+    "\nConfusion Matrix:"
+)
+
+print(
+    confusion_matrix(
+        y_test,
+        y_pred
+    )
+)
+
+
+joblib.dump(
+    model,
+    "fake_job_model.pkl"
+)
+
+joblib.dump(
+    vectorizer,
+    "tfidf_vectorizer.pkl"
+)
+
+
+print(
+    "\nModel saved successfully."
+)

@@ -1,18 +1,28 @@
+  
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .schemas import JobPosting
 from .database import jobs_collection
 from .ml_model import predict_job
+from .preprocessing import build_job_text
+from .warnings import generate_warnings
 
 
-app = FastAPI()
+app = FastAPI(
+    title="Fake Job Fraud Detection API",
+    description="AI-based fake job detection system",
+    version="1.0.0"
+)
 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500"
+    ],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -28,60 +38,47 @@ def home():
 @app.post("/predict")
 def predict(job: JobPosting):
 
-    # Combine job information for ML prediction
-    job_text = (
-        job.job_title + " " +
-        job.company + " " +
-        job.location + " " +
-        job.description
+    job_text = build_job_text(
+        job_title=job.job_title,
+        company_profile=job.company,
+        description=job.description,
+        requirements="",
+        benefits=""
     )
 
-    # ML prediction
-    prediction, probability = predict_job(job_text)
+    prediction, probability = predict_job(
+        job_text
+    )
 
-    # Convert probability into percentage
-    risk_score = round(float(probability) * 100, 2)
+    risk_score = round(
+        probability * 100,
+        2
+    )
 
-    if int(prediction) == 1:
+    if prediction == 1:
         result = "Suspicious"
     else:
         result = "Likely Genuine"
 
-    # Detect simple warning signs
-    warnings = []
+    if risk_score < 30:
+        risk_level = "Low Risk"
+    elif risk_score < 60:
+        risk_level = "Medium Risk"
+    elif risk_score < 80:
+        risk_level = "High Risk"
+    else:
+        risk_level = "Very High Risk"
 
-    description_lower = job.description.lower()
+    warnings = generate_warnings(
+        job.description
+    )
 
-    if any(
-        word in description_lower
-        for word in ["pay", "fee", "registration fee", "deposit"]
-    ):
-        warnings.append(
-            "The job description may contain a request for payment or fees."
-        )
-
-    if any(
-        word in description_lower
-        for word in ["bank account", "credit card", "password", "otp"]
-    ):
-        warnings.append(
-            "The job description may request sensitive personal information."
-        )
-
-    if any(
-        word in description_lower
-        for word in ["whatsapp", "telegram"]
-    ):
-        warnings.append(
-            "The job uses messaging platforms as a primary contact method."
-        )
-
-    # Save everything to MongoDB
     job_data = job.model_dump()
 
-    job_data["prediction"] = int(prediction)
+    job_data["prediction"] = prediction
     job_data["result"] = result
     job_data["risk_score"] = risk_score
+    job_data["risk_level"] = risk_level
     job_data["warnings"] = warnings
 
     jobs_collection.insert_one(job_data)
@@ -91,5 +88,6 @@ def predict(job: JobPosting):
         "company": job.company,
         "result": result,
         "risk_score": risk_score,
+        "risk_level": risk_level,
         "warnings": warnings
-    }   
+    }    
