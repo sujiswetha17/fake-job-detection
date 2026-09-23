@@ -1,44 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Fake Job Detection</title>
-    <link rel="stylesheet" href="style.css">
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Fake Job Detection System</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
-    <h1>Fake Job Detection System</h1>
+    <div class="container">
 
-    <p>Check whether a job posting looks suspicious.</p>
+        <h1>Fake Job Detection System</h1>
 
-    <label>Job Title:</label>
-    <input type="text" id="job_title">
+        <p class="subtitle">
+            AI-powered detection of suspicious job postings
+        </p>
 
-    <br><br>
 
-    <label>Company:</label>
-    <input type="text" id="company">
+        <!-- ========================= -->
+        <!-- MANUAL JOB ANALYSIS -->
+        <!-- ========================= -->
 
-    <br><br>
+        <section class="card">
 
-    <label>Location:</label>
-    <input type="text" id="location">
+            <h2>Manual Job Analysis</h2>
 
-    <br><br>
 
-    <label>Salary:</label>
-    <input type="number" id="salary">
+            <label for="job_title">
+                Job Title
+            </label>
 
-    <br><br>
+            <input
+                type="text"
+                id="job_title"
+                placeholder="Example: Software Developer"
+            >
 
-    <label>Description:</label>
-    <textarea id="description"></textarea>
 
-    <br><br>
+            <label for="company">
+                Company
+            </label>
 
-    <button onclick="analyzeJob()">Analyze Job</button>
-    <div id="result"></div>
+            <input
+                type="text"
+                id="company"
+                placeholder="Example: ABC Technologies"
+            >
+
+
+            <label for="location">
+                Location
+            </label>
+
+            <input
+                type="text"
+                id="location"
+                placeholder="Example: Chennai"
+            >
+
+
+            <label for="salary">
+                Salary
+            </label>
+
+            <input
+                type="number"
+                id="salary"
+                placeholder="Example: 50000"
+            >
+
+
+            <label for="description">
+                Description
+            </label>
+
+            <textarea
+                id="description"
+                placeholder="Paste the job description here..."
+            ></textarea>
+
+
+            <button
+                onclick="analyzeJob()"
+            >
+                Analyze Job
+            </button>
+
+        </section>
+
+
+
+        <!-- ========================= -->
+        <!-- IMAGE OCR ANALYSIS -->
+        <!-- ========================= -->
+
+        <section class="card">
+
+            <h2>
+                Analyze Job Screenshot
+            </h2>
+
+
+            <p>
+                Upload a screenshot or image
+                of a job advertisement.
+            </p>
+
+
+            <input
+                type="file"
+                id="imageFile"
+                accept=".jpg,.jpeg,.png,.webp"
+            >
+
+
+            <button
+                onclick="analyzeImage()"
+            >
+                Upload & Analyze Image
+            </button>
+
+        </section>
+
+
+
+        <!-- ========================= -->
+        <!-- RESULT -->
+        <!-- ========================= -->
+
+        <section
+            id="result"
+            class="result-card"
+        >
+
+            <p>
+                Your analysis result will appear here.
+            </p>
+
+        </section>
+
+    </div>
+
+
     <script src="script.js"></script>
 
 </body>
+
 </html>
