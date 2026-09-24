@@ -17,9 +17,13 @@ from .pdf_extractor import extract_text_from_pdf
 app = FastAPI(
     title="Fake Job Fraud Detection API",
     description="AI-based fake job detection system",
-    version="3.0.0"
+    version="4.0.0"
 )
 
+
+# ==========================================
+# CORS
+# ==========================================
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,12 +37,20 @@ app.add_middleware(
 )
 
 
+# ==========================================
+# HOME
+# ==========================================
+
 @app.get("/")
 def home():
     return {
         "message": "Fake Job Detection API is running"
     }
 
+
+# ==========================================
+# COMMON ANALYSIS FUNCTION
+# ==========================================
 
 def analyze_text(
     job_title: str,
@@ -48,6 +60,24 @@ def analyze_text(
     description: str,
     source: str = "manual"
 ):
+    """
+    Run the complete fake-job detection pipeline.
+
+    Job text
+        ↓
+    Text preprocessing
+        ↓
+    TF-IDF
+        ↓
+    ML prediction
+        ↓
+    Risk score
+        ↓
+    Warning detection
+        ↓
+    MongoDB
+    """
+
     job_text = build_job_text(
         job_title=job_title,
         company_profile=company,
@@ -56,9 +86,14 @@ def analyze_text(
         benefits=""
     )
 
-    prediction, probability = predict_job(job_text)
+    prediction, probability = predict_job(
+        job_text
+    )
 
-    risk_score = round(probability * 100, 2)
+    risk_score = round(
+        probability * 100,
+        2
+    )
 
     if prediction == 1:
         result = "Suspicious"
@@ -74,7 +109,13 @@ def analyze_text(
     else:
         risk_level = "Very High Risk"
 
-    warnings = generate_warnings(description)
+    warnings = generate_warnings(
+        description
+    )
+
+    # ======================================
+    # SAVE TO MONGODB
+    # ======================================
 
     job_data = {
         "job_title": job_title,
@@ -90,7 +131,13 @@ def analyze_text(
         "source": source
     }
 
-    jobs_collection.insert_one(job_data)
+    jobs_collection.insert_one(
+        job_data
+    )
+
+    # ======================================
+    # RESPONSE
+    # ======================================
 
     return {
         "job_title": job_title,
@@ -109,7 +156,12 @@ def analyze_text(
 # ==========================================
 
 @app.post("/predict")
-def predict(job: JobPosting):
+def predict(
+    job: JobPosting
+):
+    """
+    Analyze a manually entered job posting.
+    """
 
     return analyze_text(
         job_title=job.job_title,
@@ -122,13 +174,16 @@ def predict(job: JobPosting):
 
 
 # ==========================================
-# IMAGE OCR ANALYSIS
+# SINGLE IMAGE OCR ANALYSIS
 # ==========================================
 
 @app.post("/analyze-image")
 async def analyze_image(
     file: UploadFile = File(...)
 ):
+    """
+    Analyze one job-posting image.
+    """
 
     allowed_types = [
         "image/jpeg",
@@ -141,7 +196,10 @@ async def analyze_image(
 
         raise HTTPException(
             status_code=400,
-            detail="Please upload a JPG, PNG, or WEBP image."
+            detail=(
+                "Please upload a JPG, PNG, "
+                "or WEBP image."
+            )
         )
 
     temp_path = None
@@ -172,7 +230,10 @@ async def analyze_image(
 
             raise HTTPException(
                 status_code=400,
-                detail="No readable text was found in the image."
+                detail=(
+                    "No readable text was found "
+                    "in the image."
+                )
             )
 
         result = analyze_text(
@@ -185,6 +246,11 @@ async def analyze_image(
         )
 
         result["extracted_text"] = extracted_text
+        result["page_count"] = 1
+        result["processed_pages"] = 1
+        result["files"] = [
+            file.filename or "uploaded_image"
+        ]
 
         return result
 
@@ -195,13 +261,211 @@ async def analyze_image(
 
         raise HTTPException(
             status_code=500,
-            detail=f"OCR processing failed: {str(error)}"
+            detail=(
+                f"OCR processing failed: {str(error)}"
+            )
         )
 
     finally:
 
-        if temp_path and os.path.exists(temp_path):
-            os.remove(temp_path)
+        if (
+            temp_path
+            and os.path.exists(temp_path)
+        ):
+
+            os.remove(
+                temp_path
+            )
+
+
+# ==========================================
+# MULTIPLE IMAGE OCR ANALYSIS
+# ==========================================
+
+@app.post("/analyze-images")
+async def analyze_images(
+    files: list[UploadFile] = File(...)
+):
+    """
+    Analyze multiple screenshots belonging
+    to the same job posting.
+
+    Multiple screenshots
+            ↓
+        OCR each image
+            ↓
+      Combine extracted text
+            ↓
+       ONE ML prediction
+            ↓
+       ONE risk analysis
+            ↓
+       ONE MongoDB record
+    """
+
+    if not files:
+
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Please upload at least one image."
+            )
+        )
+
+    allowed_types = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp"
+    ]
+
+    temporary_files = []
+
+    extracted_pages = []
+
+    file_names = []
+
+    try:
+
+        # ==================================
+        # PROCESS EACH IMAGE
+        # ==================================
+
+        for index, file in enumerate(files):
+
+            if file.content_type not in allowed_types:
+
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"Invalid file type for "
+                        f"'{file.filename}'. "
+                        f"Please upload JPG, PNG, "
+                        f"or WEBP images."
+                    )
+                )
+
+            suffix = os.path.splitext(
+                file.filename or ".png"
+            )[1]
+
+            with tempfile.NamedTemporaryFile(
+                delete=False,
+                suffix=suffix
+            ) as temp_file:
+
+                temp_path = temp_file.name
+
+                temporary_files.append(
+                    temp_path
+                )
+
+                shutil.copyfileobj(
+                    file.file,
+                    temp_file
+                )
+
+            # ==============================
+            # OCR
+            # ==============================
+
+            extracted_text = extract_text_from_image(
+                temp_path
+            )
+
+            if extracted_text.strip():
+
+                file_name = (
+                    file.filename
+                    or f"screenshot_{index + 1}.png"
+                )
+
+                file_names.append(
+                    file_name
+                )
+
+                extracted_pages.append(
+                    "Screenshot "
+                    f"{index + 1} - "
+                    f"{file_name}\n"
+                    f"{extracted_text.strip()}"
+                )
+
+        # ==================================
+        # COMBINE OCR TEXT
+        # ==================================
+
+        combined_text = "\n\n".join(
+            extracted_pages
+        ).strip()
+
+        if not combined_text:
+
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "No readable text was found "
+                    "in the uploaded images."
+                )
+            )
+
+        # ==================================
+        # ONE ML ANALYSIS
+        # ==================================
+
+        result = analyze_text(
+            job_title="Extracted Job Posting",
+            company="Unknown",
+            location="Unknown",
+            salary=0,
+            description=combined_text,
+            source="image_ocr_multiple"
+        )
+
+        # ==================================
+        # ADD MULTI-IMAGE INFORMATION
+        # ==================================
+
+        result["extracted_text"] = combined_text
+
+        result["page_count"] = len(files)
+
+        result["processed_pages"] = len(
+            extracted_pages
+        )
+
+        result["files"] = file_names
+
+        return result
+
+    except HTTPException:
+        raise
+
+    except Exception as error:
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "Multiple image OCR processing "
+                f"failed: {str(error)}"
+            )
+        )
+
+    finally:
+
+        # ==================================
+        # DELETE TEMPORARY FILES
+        # ==================================
+
+        for temp_path in temporary_files:
+
+            if os.path.exists(
+                temp_path
+            ):
+
+                os.remove(
+                    temp_path
+                )
 
 
 # ==========================================
@@ -212,6 +476,21 @@ async def analyze_image(
 async def analyze_pdf(
     file: UploadFile = File(...)
 ):
+    """
+    Analyze a PDF job posting.
+
+    Text PDF:
+        PDF → Text extraction
+
+    Scanned PDF:
+        PDF → Image → OCR
+
+    Both:
+        ↓
+        ML analysis
+        ↓
+        MongoDB
+    """
 
     if file.content_type != "application/pdf":
 
@@ -244,7 +523,10 @@ async def analyze_pdf(
 
             raise HTTPException(
                 status_code=400,
-                detail="No readable text was found in the PDF."
+                detail=(
+                    "No readable text was found "
+                    "in the PDF."
+                )
             )
 
         result = analyze_text(
@@ -258,6 +540,10 @@ async def analyze_pdf(
 
         result["extracted_text"] = extracted_text
 
+        result["files"] = [
+            file.filename or "uploaded.pdf"
+        ]
+
         return result
 
     except HTTPException:
@@ -267,10 +553,18 @@ async def analyze_pdf(
 
         raise HTTPException(
             status_code=500,
-            detail=f"PDF processing failed: {str(error)}"
+            detail=(
+                f"PDF processing failed: {str(error)}"
+            )
         )
 
     finally:
 
-        if temp_path and os.path.exists(temp_path):
-            os.remove(temp_path)
+        if (
+            temp_path
+            and os.path.exists(temp_path)
+        ):
+
+            os.remove(
+                temp_path
+            )

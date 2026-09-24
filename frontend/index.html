@@ -1,226 +1,850 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Fake Job Detection System</title>
+    <title>JobGuard AI - Fake Job Detection</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
+    <!-- ==============================
+         NAVIGATION
+    =============================== -->
 
-    <div class="container">
+    <header class="navbar">
 
+        <div class="nav-container">
 
-        <!-- ========================= -->
-        <!-- HEADER -->
-        <!-- ========================= -->
+            <a href="#" class="logo">
+                <span class="logo-shield">🛡️</span>
+                <span>JobGuard <strong>AI</strong></span>
+            </a>
 
-        <header>
+            <nav class="nav-links">
+                <a href="#analyze">Analyze</a>
+                <a href="#how-it-works">How It Works</a>
+            </nav>
 
-            <h1>
-                Fake Job Detection System
-            </h1>
+        </div>
 
-            <p class="subtitle">
-                AI-powered detection of suspicious job postings
-            </p>
-
-        </header>
-
-
-        <!-- ========================= -->
-        <!-- MANUAL JOB ANALYSIS -->
-        <!-- ========================= -->
-
-        <section class="card">
-
-            <h2>
-                📝 Manual Job Analysis
-            </h2>
-
-            <p>
-                Enter the job details manually to check
-                whether the advertisement appears suspicious.
-            </p>
+    </header>
 
 
-            <label for="job_title">
-                Job Title
-            </label>
+    <!-- ==============================
+         HERO SECTION
+    =============================== -->
 
-            <input
-                type="text"
-                id="job_title"
-                placeholder="Example: Software Developer"
-            >
+    <main>
 
+        <section class="hero">
 
-            <label for="company">
-                Company
-            </label>
+            <div class="hero-content">
 
-            <input
-                type="text"
-                id="company"
-                placeholder="Example: ABC Technologies"
-            >
+                <div class="hero-badge">
+                    🛡️ AI-Powered Job Safety
+                </div>
 
+                <h1>
+                    Detect Fake Jobs
+                    <span>Before It's Too Late.</span>
+                </h1>
 
-            <label for="location">
-                Location
-            </label>
+                <p>
+                    Analyze job postings using AI, machine learning,
+                    OCR and fraud detection signals to identify
+                    suspicious opportunities.
+                </p>
 
-            <input
-                type="text"
-                id="location"
-                placeholder="Example: Chennai"
-            >
+                <a href="#analyze" class="hero-button">
+                    Analyze a Job
+                    <span>→</span>
+                </a>
 
-
-            <label for="salary">
-                Salary
-            </label>
-
-            <input
-                type="number"
-                id="salary"
-                placeholder="Example: 50000"
-            >
+            </div>
 
 
-            <label for="description">
-                Job Description
-            </label>
+            <div class="hero-visual">
 
-            <textarea
-                id="description"
-                placeholder="Paste the complete job description here..."
-            ></textarea>
+                <div class="security-card">
 
+                    <div class="security-icon">
+                        🛡️
+                    </div>
 
-            <button
-                type="button"
-                onclick="analyzeJob()"
-            >
-                Analyze Job
-            </button>
+                    <div class="security-lines">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="security-check">
+                        ✓
+                    </div>
+
+                </div>
+
+            </div>
 
         </section>
 
 
+        <!-- ==============================
+             QUICK STATS
+        =============================== -->
 
-        <!-- ========================= -->
-        <!-- IMAGE ANALYSIS -->
-        <!-- ========================= -->
+        <section class="stats-section">
 
-        <section class="card">
+            <div class="stat-card">
+                <div class="stat-icon">🤖</div>
+                <div>
+                    <strong>AI Analysis</strong>
+                    <span>Machine learning powered</span>
+                </div>
+            </div>
 
-            <h2>
-                🖼️ Analyze Job Screenshot
-            </h2>
+            <div class="stat-card">
+                <div class="stat-icon">📸</div>
+                <div>
+                    <strong>Image & PDF</strong>
+                    <span>OCR supported</span>
+                </div>
+            </div>
 
-            <p>
-                Upload a screenshot or image of a job
-                advertisement. The system will extract
-                the text using OCR and analyze it.
-            </p>
-
-
-            <input
-                type="file"
-                id="imageFile"
-                accept=".jpg,.jpeg,.png,.webp"
-            >
-
-
-            <button
-                type="button"
-                onclick="analyzeImage()"
-            >
-                Upload & Analyze Image
-            </button>
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <div>
+                    <strong>Instant Results</strong>
+                    <span>Fast fraud analysis</span>
+                </div>
+            </div>
 
         </section>
 
 
+        <!-- ==============================
+             ANALYZE SECTION
+        =============================== -->
 
-        <!-- ========================= -->
-        <!-- PDF ANALYSIS -->
-        <!-- ========================= -->
+        <section id="analyze" class="analysis-section">
 
-        <section class="card">
+            <div class="section-heading">
 
-            <h2>
-                📄 Analyze Job PDF
-            </h2>
+                <div>
+                    <span class="section-label">
+                        JOB ANALYZER
+                    </span>
 
-            <p>
-                Upload a job advertisement PDF.
-                The system will extract the text and
-                analyze it for possible fraud indicators.
-            </p>
+                    <h2>
+                        Check a Job Posting
+                    </h2>
+
+                    <p>
+                        Choose how you want to analyze the job posting.
+                    </p>
+                </div>
+
+            </div>
 
 
-            <input
-                type="file"
-                id="pdfFile"
-                accept=".pdf,application/pdf"
+            <!-- ==============================
+                 ANALYSIS OPTIONS
+            =============================== -->
+
+            <div class="analysis-grid">
+
+
+                <!-- MANUAL ENTRY -->
+
+                <div class="analysis-card">
+
+                    <div class="card-header">
+
+                        <div class="card-icon manual-icon">
+                            ✍️
+                        </div>
+
+                        <div>
+                            <h3>Enter Job Details</h3>
+                            <p>
+                                Paste the job information manually.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <form id="jobForm">
+
+                        <div class="form-group">
+
+                            <label for="jobTitle">
+                                Job Title
+                            </label>
+
+                            <input
+                                type="text"
+                                id="jobTitle"
+                                placeholder="e.g. Software Developer"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="company">
+                                    Company
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="company"
+                                    placeholder="Company name"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="location">
+                                    Location
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="location"
+                                    placeholder="Remote / Chennai"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="salary">
+                                Salary
+                            </label>
+
+                            <input
+                                type="number"
+                                id="salary"
+                                placeholder="Expected salary"
+                                min="0"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="description">
+                                Job Description
+                            </label>
+
+                            <textarea
+                                id="description"
+                                rows="6"
+                                placeholder="Paste the complete job description here..."
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="primary-button"
+                        >
+                            Analyze Job
+                            <span>→</span>
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- IMAGE UPLOAD -->
+
+                <div class="analysis-card upload-card">
+
+                    <div class="card-header">
+
+                        <div class="card-icon image-icon">
+                            📸
+                        </div>
+
+                        <div>
+                            <h3>Upload Screenshots</h3>
+                            <p>
+                                Upload one or multiple job screenshots.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="upload-zone"
+                        id="imageDropZone"
+                    >
+
+                        <input
+                            type="file"
+                            id="imageInput"
+                            accept="image/jpeg,image/png,image/jpg,image/webp"
+                            multiple
+                            hidden
+                        >
+
+                        <div class="upload-icon">
+                            📷
+                        </div>
+
+                        <h4>
+                            Upload Job Screenshots
+                        </h4>
+
+                        <p>
+                            Select one or multiple images
+                        </p>
+
+                        <span class="upload-format">
+                            JPG • PNG • WEBP
+                        </span>
+
+                        <button
+                            type="button"
+                            class="secondary-button"
+                            id="selectImagesButton"
+                        >
+                            Choose Images
+                        </button>
+
+                    </div>
+
+
+                    <!-- SELECTED IMAGE INFORMATION -->
+
+                    <div
+                        id="imageSelectionArea"
+                        class="image-selection-area hidden"
+                    >
+
+                        <div class="selection-header">
+
+                            <div>
+                                <strong>
+                                    Selected Screenshots
+                                </strong>
+
+                                <span id="imageCount">
+                                    0 images
+                                </span>
+                            </div>
+
+                            <button
+                                type="button"
+                                id="clearImagesButton"
+                                class="clear-button"
+                            >
+                                Clear All
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="imagePreviewGrid"
+                            class="image-preview-grid"
+                        ></div>
+
+
+                        <button
+                            type="button"
+                            id="analyzeImagesButton"
+                            class="primary-button"
+                        >
+                            Analyze Selected Screenshots
+                            <span>→</span>
+                        </button>
+
+                    </div>
+
+
+                    <!-- IMAGE PROCESSING STATUS -->
+
+                    <div
+                        id="imageProcessingStatus"
+                        class="processing-status hidden"
+                    >
+                        <div class="spinner"></div>
+
+                        <div>
+                            <strong>
+                                Analyzing screenshots...
+                            </strong>
+
+                            <span>
+                                Extracting text and checking the job posting.
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- PDF UPLOAD -->
+
+                <div class="analysis-card upload-card">
+
+                    <div class="card-header">
+
+                        <div class="card-icon pdf-icon">
+                            📄
+                        </div>
+
+                        <div>
+                            <h3>Upload PDF</h3>
+                            <p>
+                                Analyze a complete job posting PDF.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="upload-zone"
+                        id="pdfDropZone"
+                    >
+
+                        <input
+                            type="file"
+                            id="pdfInput"
+                            accept="application/pdf"
+                            hidden
+                        >
+
+                        <div class="upload-icon">
+                            📄
+                        </div>
+
+                        <h4>
+                            Upload Job PDF
+                        </h4>
+
+                        <p>
+                            Text or scanned PDF supported
+                        </p>
+
+                        <span class="upload-format">
+                            PDF
+                        </span>
+
+                        <button
+                            type="button"
+                            class="secondary-button"
+                            id="selectPdfButton"
+                        >
+                            Choose PDF
+                        </button>
+
+                    </div>
+
+
+                    <!-- PDF SELECTED -->
+
+                    <div
+                        id="pdfSelectionArea"
+                        class="file-selection-area hidden"
+                    >
+
+                        <div class="selected-file">
+
+                            <div class="selected-file-icon">
+                                📄
+                            </div>
+
+                            <div class="selected-file-info">
+
+                                <strong id="pdfFileName">
+                                    Job posting.pdf
+                                </strong>
+
+                                <span>
+                                    PDF selected successfully
+                                </span>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                id="removePdfButton"
+                                class="clear-button"
+                            >
+                                Remove
+                            </button>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            id="analyzePdfButton"
+                            class="primary-button"
+                        >
+                            Analyze PDF
+                            <span>→</span>
+                        </button>
+
+                    </div>
+
+
+                    <!-- PDF PROCESSING -->
+
+                    <div
+                        id="pdfProcessingStatus"
+                        class="processing-status hidden"
+                    >
+
+                        <div class="spinner"></div>
+
+                        <div>
+                            <strong>
+                                Analyzing PDF...
+                            </strong>
+
+                            <span>
+                                Extracting and checking the job posting.
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==============================
+                 GLOBAL PROCESSING
+            =============================== -->
+
+            <div
+                id="loading"
+                class="global-loading hidden"
             >
 
+                <div class="spinner"></div>
 
-            <button
-                type="button"
-                onclick="analyzePDF()"
+                <div>
+                    <strong>
+                        Analyzing job posting...
+                    </strong>
+
+                    <span>
+                        Please wait while JobGuard AI processes the content.
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- ==============================
+                 ERROR MESSAGE
+            =============================== -->
+
+            <div
+                id="errorMessage"
+                class="error-message hidden"
+            ></div>
+
+
+            <!-- ==============================
+                 RESULT SECTION
+            =============================== -->
+
+            <section
+                id="resultSection"
+                class="result-section hidden"
             >
-                Upload & Analyze PDF
-            </button>
+
+                <div class="result-header">
+
+                    <div>
+                        <span class="section-label">
+                            ANALYSIS RESULT
+                        </span>
+
+                        <h2>
+                            Job Safety Analysis
+                        </h2>
+                    </div>
+
+                    <div
+                        id="resultBadge"
+                        class="result-badge"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="result-grid">
+
+
+                    <!-- RISK SCORE -->
+
+                    <div class="result-card risk-card">
+
+                        <span class="result-label">
+                            RISK SCORE
+                        </span>
+
+                        <div
+                            id="riskScore"
+                            class="risk-score"
+                        >
+                            0%
+                        </div>
+
+                        <div class="risk-meter">
+
+                            <div
+                                id="riskMeter"
+                                class="risk-meter-fill"
+                            ></div>
+
+                        </div>
+
+                        <strong id="riskLevel">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <!-- RESULT -->
+
+                    <div class="result-card">
+
+                        <span class="result-label">
+                            PREDICTION
+                        </span>
+
+                        <h3 id="resultText">
+                            —
+                        </h3>
+
+                        <p>
+                            Based on the AI analysis of the submitted
+                            job posting.
+                        </p>
+
+                    </div>
+
+
+                    <!-- WARNING SIGNALS -->
+
+                    <div class="result-card warnings-card">
+
+                        <span class="result-label">
+                            WARNING SIGNS
+                        </span>
+
+                        <div
+                            id="warningsList"
+                            class="warnings-list"
+                        >
+                            <p>
+                                No warnings detected.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EXTRACTED TEXT -->
+
+                <div
+                    id="extractedTextContainer"
+                    class="extracted-text-card hidden"
+                >
+
+                    <div class="extracted-header">
+
+                        <div>
+                            <span class="result-label">
+                                EXTRACTED TEXT
+                            </span>
+
+                            <h3>
+                                Text detected from your file
+                            </h3>
+                        </div>
+
+                    </div>
+
+                    <pre
+                        id="extractedText"
+                        class="extracted-text"
+                    ></pre>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="newAnalysisButton"
+                    class="secondary-button new-analysis-button"
+                >
+                    Analyze Another Job
+                </button>
+
+            </section>
 
         </section>
 
 
-
-        <!-- ========================= -->
-        <!-- RESULT -->
-        <!-- ========================= -->
+        <!-- ==============================
+             HOW IT WORKS
+        =============================== -->
 
         <section
-            id="result"
-            class="result-card"
+            id="how-it-works"
+            class="how-it-works"
         >
 
-            <p>
-                Your analysis result will appear here.
-            </p>
+            <div class="section-heading centered">
+
+                <span class="section-label">
+                    SIMPLE & FAST
+                </span>
+
+                <h2>
+                    How It Works
+                </h2>
+
+                <p>
+                    Analyze a job posting in just a few simple steps.
+                </p>
+
+            </div>
+
+
+            <div class="steps-grid">
+
+                <div class="step-card">
+
+                    <div class="step-number">
+                        01
+                    </div>
+
+                    <div class="step-icon">
+                        📤
+                    </div>
+
+                    <h3>
+                        Submit
+                    </h3>
+
+                    <p>
+                        Enter job details or upload screenshots or a PDF.
+                    </p>
+
+                </div>
+
+
+                <div class="step-card">
+
+                    <div class="step-number">
+                        02
+                    </div>
+
+                    <div class="step-icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Analyze
+                    </h3>
+
+                    <p>
+                        The system extracts the job information and
+                        evaluates suspicious signals.
+                    </p>
+
+                </div>
+
+
+                <div class="step-card">
+
+                    <div class="step-number">
+                        03
+                    </div>
+
+                    <div class="step-icon">
+                        🛡️
+                    </div>
+
+                    <h3>
+                        Get Results
+                    </h3>
+
+                    <p>
+                        Receive a risk score, prediction and warning signs.
+                    </p>
+
+                </div>
+
+            </div>
 
         </section>
 
-
-    </div>
-
+    </main>
 
 
-    <!-- ========================= -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================= -->
+    <!-- ==============================
+         SIMPLE FOOTER
+    =============================== -->
+
+    <footer class="footer">
+
+        <div class="footer-inner">
+
+            <span>
+                © 2026 JobGuard AI
+            </span>
+
+            <span>
+                AI-powered fake job detection
+            </span>
+
+        </div>
+
+    </footer>
+
 
     <script src="script.js"></script>
 
-
 </body>
-
 </html>
