@@ -11,12 +11,13 @@ from .ml_model import predict_job
 from .preprocessing import build_job_text
 from .warnings import generate_warnings
 from .ocr import extract_text_from_image
+from .pdf_extractor import extract_text_from_pdf
 
 
 app = FastAPI(
     title="Fake Job Fraud Detection API",
     description="AI-based fake job detection system",
-    version="2.0.0"
+    version="3.0.0"
 )
 
 
@@ -47,10 +48,6 @@ def analyze_text(
     description: str,
     source: str = "manual"
 ):
-    """
-    Common analysis function used by manual and OCR input.
-    """
-
     job_text = build_job_text(
         job_title=job_title,
         company_profile=company,
@@ -61,10 +58,7 @@ def analyze_text(
 
     prediction, probability = predict_job(job_text)
 
-    risk_score = round(
-        probability * 100,
-        2
-    )
+    risk_score = round(probability * 100, 2)
 
     if prediction == 1:
         result = "Suspicious"
@@ -110,6 +104,10 @@ def analyze_text(
     }
 
 
+# ==========================================
+# MANUAL JOB ANALYSIS
+# ==========================================
+
 @app.post("/predict")
 def predict(job: JobPosting):
 
@@ -123,15 +121,14 @@ def predict(job: JobPosting):
     )
 
 
+# ==========================================
+# IMAGE OCR ANALYSIS
+# ==========================================
+
 @app.post("/analyze-image")
 async def analyze_image(
     file: UploadFile = File(...)
 ):
-    """
-    Upload a job screenshot/image,
-    extract text using OCR,
-    and analyze the extracted text.
-    """
 
     allowed_types = [
         "image/jpeg",
@@ -141,6 +138,7 @@ async def analyze_image(
     ]
 
     if file.content_type not in allowed_types:
+
         raise HTTPException(
             status_code=400,
             detail="Please upload a JPG, PNG, or WEBP image."
@@ -171,6 +169,7 @@ async def analyze_image(
         )
 
         if not extracted_text.strip():
+
             raise HTTPException(
                 status_code=400,
                 detail="No readable text was found in the image."
@@ -202,4 +201,76 @@ async def analyze_image(
     finally:
 
         if temp_path and os.path.exists(temp_path):
-            os.remove(temp_path)    
+            os.remove(temp_path)
+
+
+# ==========================================
+# PDF ANALYSIS
+# ==========================================
+
+@app.post("/analyze-pdf")
+async def analyze_pdf(
+    file: UploadFile = File(...)
+):
+
+    if file.content_type != "application/pdf":
+
+        raise HTTPException(
+            status_code=400,
+            detail="Please upload a PDF file."
+        )
+
+    temp_path = None
+
+    try:
+
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".pdf"
+        ) as temp_file:
+
+            temp_path = temp_file.name
+
+            shutil.copyfileobj(
+                file.file,
+                temp_file
+            )
+
+        extracted_text = extract_text_from_pdf(
+            temp_path
+        )
+
+        if not extracted_text.strip():
+
+            raise HTTPException(
+                status_code=400,
+                detail="No readable text was found in the PDF."
+            )
+
+        result = analyze_text(
+            job_title="Extracted PDF Job Posting",
+            company="Unknown",
+            location="Unknown",
+            salary=0,
+            description=extracted_text,
+            source="pdf"
+        )
+
+        result["extracted_text"] = extracted_text
+
+        return result
+
+    except HTTPException:
+        raise
+
+    except Exception as error:
+
+        raise HTTPException(
+            status_code=500,
+            detail=f"PDF processing failed: {str(error)}"
+        )
+
+    finally:
+
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)

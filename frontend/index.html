@@ -22,13 +22,25 @@
 
 <body>
 
+
     <div class="container">
 
-        <h1>Fake Job Detection System</h1>
 
-        <p class="subtitle">
-            AI-powered detection of suspicious job postings
-        </p>
+        <!-- ========================= -->
+        <!-- HEADER -->
+        <!-- ========================= -->
+
+        <header>
+
+            <h1>
+                Fake Job Detection System
+            </h1>
+
+            <p class="subtitle">
+                AI-powered detection of suspicious job postings
+            </p>
+
+        </header>
 
 
         <!-- ========================= -->
@@ -37,7 +49,14 @@
 
         <section class="card">
 
-            <h2>Manual Job Analysis</h2>
+            <h2>
+                📝 Manual Job Analysis
+            </h2>
+
+            <p>
+                Enter the job details manually to check
+                whether the advertisement appears suspicious.
+            </p>
 
 
             <label for="job_title">
@@ -85,16 +104,17 @@
 
 
             <label for="description">
-                Description
+                Job Description
             </label>
 
             <textarea
                 id="description"
-                placeholder="Paste the job description here..."
+                placeholder="Paste the complete job description here..."
             ></textarea>
 
 
             <button
+                type="button"
                 onclick="analyzeJob()"
             >
                 Analyze Job
@@ -105,19 +125,19 @@
 
 
         <!-- ========================= -->
-        <!-- IMAGE OCR ANALYSIS -->
+        <!-- IMAGE ANALYSIS -->
         <!-- ========================= -->
 
         <section class="card">
 
             <h2>
-                Analyze Job Screenshot
+                🖼️ Analyze Job Screenshot
             </h2>
 
-
             <p>
-                Upload a screenshot or image
-                of a job advertisement.
+                Upload a screenshot or image of a job
+                advertisement. The system will extract
+                the text using OCR and analyze it.
             </p>
 
 
@@ -129,9 +149,45 @@
 
 
             <button
+                type="button"
                 onclick="analyzeImage()"
             >
                 Upload & Analyze Image
+            </button>
+
+        </section>
+
+
+
+        <!-- ========================= -->
+        <!-- PDF ANALYSIS -->
+        <!-- ========================= -->
+
+        <section class="card">
+
+            <h2>
+                📄 Analyze Job PDF
+            </h2>
+
+            <p>
+                Upload a job advertisement PDF.
+                The system will extract the text and
+                analyze it for possible fraud indicators.
+            </p>
+
+
+            <input
+                type="file"
+                id="pdfFile"
+                accept=".pdf,application/pdf"
+            >
+
+
+            <button
+                type="button"
+                onclick="analyzePDF()"
+            >
+                Upload & Analyze PDF
             </button>
 
         </section>
@@ -153,10 +209,17 @@
 
         </section>
 
+
     </div>
 
 
+
+    <!-- ========================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================= -->
+
     <script src="script.js"></script>
+
 
 </body>
 

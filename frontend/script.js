@@ -1,22 +1,26 @@
 const API_URL = "http://127.0.0.1:8000";
 
 
+// ==========================================
+// MANUAL JOB ANALYSIS
+// ==========================================
+
 async function analyzeJob() {
 
     const jobTitle =
-        document.getElementById("job_title").value;
+        document.getElementById("job_title").value.trim();
 
     const company =
-        document.getElementById("company").value;
+        document.getElementById("company").value.trim();
 
     const location =
-        document.getElementById("location").value;
+        document.getElementById("location").value.trim();
 
     const salary =
         document.getElementById("salary").value;
 
     const description =
-        document.getElementById("description").value;
+        document.getElementById("description").value.trim();
 
     const resultDiv =
         document.getElementById("result");
@@ -26,7 +30,8 @@ async function analyzeJob() {
 
         resultDiv.innerHTML = `
             <p class="error">
-                Please fill in the job title, company and description.
+                Please fill in the job title, company
+                and job description.
             </p>
         `;
 
@@ -35,7 +40,9 @@ async function analyzeJob() {
 
 
     resultDiv.innerHTML = `
-        <p>Analyzing job...</p>
+        <p>
+            🔍 Analyzing job posting...
+        </p>
     `;
 
 
@@ -69,13 +76,15 @@ async function analyzeJob() {
         );
 
 
-        const result = await response.json();
+        const result =
+            await response.json();
 
 
         if (!response.ok) {
 
             throw new Error(
-                result.detail || "Analysis failed."
+                result.detail ||
+                "Analysis failed."
             );
         }
 
@@ -90,12 +99,17 @@ async function analyzeJob() {
 
         resultDiv.innerHTML = `
             <p class="error">
-                Unable to connect to the backend server.
+                ${escapeHtml(error.message)}
             </p>
         `;
     }
 }
 
+
+
+// ==========================================
+// IMAGE OCR ANALYSIS
+// ==========================================
 
 async function analyzeImage() {
 
@@ -123,7 +137,9 @@ async function analyzeImage() {
 
 
     resultDiv.innerHTML = `
-        <p>Reading image and extracting text...</p>
+        <p>
+            🔍 Reading image and extracting text...
+        </p>
     `;
 
 
@@ -142,6 +158,7 @@ async function analyzeImage() {
             `${API_URL}/analyze-image`,
             {
                 method: "POST",
+
                 body: formData
             }
         );
@@ -170,12 +187,117 @@ async function analyzeImage() {
 
         resultDiv.innerHTML = `
             <p class="error">
-                ${error.message}
+                ${escapeHtml(error.message)}
             </p>
         `;
     }
 }
 
+
+
+// ==========================================
+// PDF ANALYSIS
+// ==========================================
+
+async function analyzePDF() {
+
+    const fileInput =
+        document.getElementById("pdfFile");
+
+    const resultDiv =
+        document.getElementById("result");
+
+
+    if (!fileInput.files.length) {
+
+        resultDiv.innerHTML = `
+            <p class="error">
+                Please select a PDF file first.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    const file =
+        fileInput.files[0];
+
+
+    if (file.type !== "application/pdf") {
+
+        resultDiv.innerHTML = `
+            <p class="error">
+                Please select a valid PDF file.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    resultDiv.innerHTML = `
+        <p>
+            📄 Reading PDF and extracting text...
+        </p>
+    `;
+
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "file",
+        file
+    );
+
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/analyze-pdf`,
+            {
+                method: "POST",
+
+                body: formData
+            }
+        );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.detail ||
+                "PDF analysis failed."
+            );
+        }
+
+
+        displayPDFResult(result);
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        resultDiv.innerHTML = `
+            <p class="error">
+                ${escapeHtml(error.message)}
+            </p>
+        `;
+    }
+}
+
+
+
+// ==========================================
+// DISPLAY MANUAL RESULT
+// ==========================================
 
 function displayResult(result) {
 
@@ -184,33 +306,16 @@ function displayResult(result) {
 
 
     const warningsHTML =
-        result.warnings.length > 0
-
-        ?
-
-        `
-        <ul>
-            ${result.warnings
-                .map(
-                    warning =>
-                        `<li>${warning}</li>`
-                )
-                .join("")}
-        </ul>
-        `
-
-        :
-
-        `
-        <p>
-            No major warning signs detected.
-        </p>
-        `;
+        createWarningsHTML(
+            result.warnings
+        );
 
 
     resultDiv.innerHTML = `
 
-        <h2>${result.result}</h2>
+        <h2>
+            ${escapeHtml(result.result)}
+        </h2>
 
         <p>
             <strong>Risk Score:</strong>
@@ -219,16 +324,23 @@ function displayResult(result) {
 
         <p>
             <strong>Risk Level:</strong>
-            ${result.risk_level}
+            ${escapeHtml(result.risk_level)}
         </p>
 
-        <h3>Warning Signs</h3>
+        <h3>
+            ⚠️ Warning Signs
+        </h3>
 
         ${warningsHTML}
 
     `;
 }
 
+
+
+// ==========================================
+// DISPLAY IMAGE RESULT
+// ==========================================
 
 function displayImageResult(result) {
 
@@ -237,33 +349,16 @@ function displayImageResult(result) {
 
 
     const warningsHTML =
-        result.warnings.length > 0
-
-        ?
-
-        `
-        <ul>
-            ${result.warnings
-                .map(
-                    warning =>
-                        `<li>${warning}</li>`
-                )
-                .join("")}
-        </ul>
-        `
-
-        :
-
-        `
-        <p>
-            No major warning signs detected.
-        </p>
-        `;
+        createWarningsHTML(
+            result.warnings
+        );
 
 
     resultDiv.innerHTML = `
 
-        <h2>${result.result}</h2>
+        <h2>
+            ${escapeHtml(result.result)}
+        </h2>
 
         <p>
             <strong>Risk Score:</strong>
@@ -272,30 +367,139 @@ function displayImageResult(result) {
 
         <p>
             <strong>Risk Level:</strong>
-            ${result.risk_level}
+            ${escapeHtml(result.risk_level)}
         </p>
 
-        <h3>Warning Signs</h3>
+        <h3>
+            ⚠️ Warning Signs
+        </h3>
 
         ${warningsHTML}
 
 
-        <h3>Extracted Text</h3>
+        <h3>
+            📝 Extracted Text
+        </h3>
 
         <div class="extracted-text">
-            ${escapeHtml(result.extracted_text)}
+
+            ${escapeHtml(
+                result.extracted_text || ""
+            )}
+
         </div>
 
     `;
 }
 
 
+
+// ==========================================
+// DISPLAY PDF RESULT
+// ==========================================
+
+function displayPDFResult(result) {
+
+    const resultDiv =
+        document.getElementById("result");
+
+
+    const warningsHTML =
+        createWarningsHTML(
+            result.warnings
+        );
+
+
+    resultDiv.innerHTML = `
+
+        <h2>
+            ${escapeHtml(result.result)}
+        </h2>
+
+        <p>
+            <strong>Risk Score:</strong>
+            ${result.risk_score}%
+        </p>
+
+        <p>
+            <strong>Risk Level:</strong>
+            ${escapeHtml(result.risk_level)}
+        </p>
+
+        <h3>
+            ⚠️ Warning Signs
+        </h3>
+
+        ${warningsHTML}
+
+
+        <h3>
+            📄 Extracted PDF Text
+        </h3>
+
+        <div class="extracted-text">
+
+            ${escapeHtml(
+                result.extracted_text || ""
+            )}
+
+        </div>
+
+    `;
+}
+
+
+
+// ==========================================
+// CREATE WARNING LIST
+// ==========================================
+
+function createWarningsHTML(warnings) {
+
+    if (
+        !warnings ||
+        warnings.length === 0
+    ) {
+
+        return `
+            <p>
+                ✅ No major warning signs detected.
+            </p>
+        `;
+    }
+
+
+    return `
+        <ul>
+
+            ${warnings
+                .map(
+                    warning => `
+                        <li>
+                            ${escapeHtml(warning)}
+                        </li>
+                    `
+                )
+                .join("")
+            }
+
+        </ul>
+    `;
+}
+
+
+
+// ==========================================
+// HTML ESCAPING
+// ==========================================
+
 function escapeHtml(text) {
 
     const div =
         document.createElement("div");
 
-    div.textContent = text;
+    div.textContent =
+        text ?? "";
 
     return div.innerHTML;
 }
